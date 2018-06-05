@@ -17,7 +17,7 @@ from yolo3_cpu_post_process import yolo_eval
 
 def parse_args():
     parser = argparse.ArgumentParser(description="tensorflow yolov3 inference demo")
-    parser.add_argument("-model_path", "-m", required=True, help="required, path to the freezed tensorflow yolov3 model")
+    parser.add_argument("--model_path", "-m", required=True, help="required, path to the freezed tensorflow yolov3 model")
     parser.add_argument("--anchor_path", "-a", required=True, help="required, path to the file contains yolov3 anchors")
     parser.add_argument("--label_path", "-l", required=True, help="required, path to the text file contains all class names")
     parser.add_argument("--score_thresh", required=False, type=float, default=0.5,
