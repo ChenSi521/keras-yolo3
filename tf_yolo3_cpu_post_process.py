@@ -119,7 +119,6 @@ class TFYOLO(object):
             boxed_image = letterbox_image(image, new_image_size)
         image_data = np.array(boxed_image, dtype='float32')
 
-        print("")
         print(image_data.shape)
         image_data /= 255.
         image_data = np.expand_dims(image_data, 0)  # Add batch dimension.
@@ -179,6 +178,8 @@ class TFYOLO(object):
             draw.text(text_origin, label, fill=(0, 0, 0), font=font)
             del draw
 
+        print("")
+
         return image
 
     def __enter__(self):
@@ -214,7 +215,9 @@ if __name__ == '__main__':
             for name in os.listdir(args.input_dir):
                 suffix = name.rsplit(".", 1)[-1]
                 if suffix in image_sufix_list:
-                    test_image = Image.open(os.path.join(args.input_dir, name))
+                    img_path = os.path.join(args.input_dir, name)
+                    print("processing image %s" % img_path)
+                    test_image = Image.open(img_path)
                     result_image = yolo_detector.detect_image(test_image)
                     out_path = os.path.join(output_dir, name)
                     result_image.save(out_path)
