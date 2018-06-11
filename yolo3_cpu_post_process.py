@@ -31,8 +31,8 @@ def cpu_nms(boxes, box_scores, iou_thresh, max_kept_boxes):
         intersections_areas = intersections_widths * intersections_heights
         iou = intersections_areas / (box_areas[current_max_score_index]
                                      + box_areas[score_order[1:]] - intersections_areas)
-        suppressed_boxes_index = np.where(iou <= iou_thresh)[0]
-        score_order = score_order[suppressed_boxes_index + 1]
+        kept_boxes_index = np.where(iou <= iou_thresh)[0]
+        score_order = score_order[kept_boxes_index + 1]
     return keep_indexes
 
 
