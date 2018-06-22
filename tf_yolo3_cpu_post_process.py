@@ -31,6 +31,13 @@ def parse_args():
     group.add_argument("--input_dir", "-d", help="path to a directory contains some test images", default=None)
     group.add_argument("--output_dir", "-o", help="directory for the detecting results", default=None)
 
+    parser.add_argument("--model_input_height", "-mh", type=int, default=416,
+                        help="height of the model input, \
+must be an integer multiple times of 32, the test image will be resized to this height")
+    parser.add_argument("--model_input_width", "-mw", type=int, default=416,
+                        help="width of the model input, \
+must be an integer multiple times of 32, the test image will be resized to this width")
+
     return parser.parse_args()
 
 
@@ -54,7 +61,7 @@ def load_graph(frozen_graph_path, name_prefix=None):
 
 
 class TFYOLO(object):
-    def __init__(self, model_path, anchor_path, label_path, score_thresh=0.5, nms_iou_thresh=0.45):
+    def __init__(self, model_path, anchor_path, label_path, mh=416, mw=416, score_thresh=0.5, nms_iou_thresh=0.45):
         self._model_path = os.path.expanduser(model_path)
         self._anchor_path = anchor_path
         self._label_path = label_path
@@ -63,7 +70,7 @@ class TFYOLO(object):
 
         self._class_names = self._get_class()
         self._anchors = self._get_anchors()
-        self._model_image_size = (416, 416)  # fixed size or (None, None), hw
+        self._model_image_size = (mh, mw)  # fixed size or (None, None), hw
 
         self._sess = tf.Session()
 
@@ -198,8 +205,12 @@ class TFYOLO(object):
 if __name__ == '__main__':
     args = parse_args()
 
-    with TFYOLO(args.model_path, args.anchor_path, args.label_path, args.score_thresh,
-                args.nms_iou_thresh) as yolo_detector:
+    # make sure the value is multiple times of 32
+    args.model_input_height = args.model_input_height - args.model_input_height % 32
+    args.model_input_width = args.model_input_width - args.model_input_width % 32
+
+    with TFYOLO(args.model_path, args.anchor_path, args.label_path, args.model_input_height, args.model_input_width,
+                args.score_thresh, args.nms_iou_thresh) as yolo_detector:
         if args.input_image_path is not None and os.path.isfile(args.input_image_path):
             test_image = Image.open(args.input_image_path)
             result_image = yolo_detector.detect_image(test_image)
